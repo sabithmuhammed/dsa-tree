@@ -1,0 +1,101 @@
+// const kthSmallest = new KthSmallest(3);
+// kthSmallest.add(4); // Stream: [4], Kth Smallest: -1 (There is no kth smallest element yet)
+// kthSmallest.add(2); // Stream: [4, 2], Kth Smallest: -1 (There is no kth smallest element yet)
+// kthSmallest.add(8); // Stream: [4, 2, 8], Kth Smallest: 2
+// kthSmallest.add(1); // Stream: [4, 2, 8, 1], Kth Smallest: 2
+// kthSmallest.add(5); // Stream: [4, 2, 8, 1, 5], Kth Smallest: 4
+
+
+
+class MinHeap {
+    constructor() {
+      this.heap = [];
+    }
+  
+    insert(value) {
+      this.heap.push(value);
+      this.heapifyUp(this.heap.length - 1);
+    }
+  
+    removeMin() {
+      if (this.heap.length === 0) {
+        return null;
+      }
+  
+      if (this.heap.length === 1) {
+        return this.heap.pop();
+      }
+  
+      const min = this.heap[0];
+      this.heap[0] = this.heap.pop();
+      this.heapifyDown(0);
+      return min;
+    }
+  
+    heapifyUp(index) {
+      let currentIdx = index;
+      while (currentIdx > 0) {
+        const parentIdx = Math.floor((currentIdx - 1) / 2);
+        if (this.heap[currentIdx] < this.heap[parentIdx]) {
+          [this.heap[currentIdx], this.heap[parentIdx]] = [this.heap[parentIdx], this.heap[currentIdx]];
+          currentIdx = parentIdx;
+        } else {
+          break;
+        }
+      }
+    }
+  
+    heapifyDown(index) {
+      let currentIdx = index;
+      while (currentIdx < this.heap.length) {
+        const leftChildIdx = 2 * currentIdx + 1;
+        const rightChildIdx = 2 * currentIdx + 2;
+        let smallest = currentIdx;
+  
+        if (leftChildIdx < this.heap.length && this.heap[leftChildIdx] < this.heap[smallest]) {
+          smallest = leftChildIdx;
+        }
+  
+        if (rightChildIdx < this.heap.length && this.heap[rightChildIdx] < this.heap[smallest]) {
+          smallest = rightChildIdx;
+        }
+  
+        if (smallest !== currentIdx) {
+          [this.heap[currentIdx], this.heap[smallest]] = [this.heap[smallest], this.heap[currentIdx]];
+          currentIdx = smallest;
+        } else {
+          break;
+        }
+      }
+    }
+  }
+  
+  class KthSmallest {
+    constructor(k) {
+      this.k = k;
+      this.minHeap = new MinHeap();
+    }
+  
+    add(value) {
+      this.minHeap.insert(value);
+  
+      if (this.minHeap.heap.length > this.k) {
+        this.minHeap.removeMin();
+      }
+  
+      if (this.minHeap.heap.length === this.k) {
+        console.log(`Kth Smallest: ${this.minHeap.heap[0]}`);
+      } else {
+        console.log(`Kth Smallest: -1`);
+      }
+    }
+  }
+  
+  // Example usage:
+  const kthSmallest = new KthSmallest(3);
+  kthSmallest.add(4); // Output: Kth Smallest: -1
+  kthSmallest.add(2); // Output: Kth Smallest: -1
+  kthSmallest.add(8); // Output: Kth Smallest: 2
+  kthSmallest.add(1); // Output: Kth Smallest: 2
+  kthSmallest.add(5); // Output: Kth Smallest: 4
+  
